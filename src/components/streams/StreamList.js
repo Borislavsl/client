@@ -1,18 +1,23 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchStreams } from '../../actions';
 
 const StreamList = (props) => {
 
+    const dispatch = useDispatch();
     const initialFetchStreams = () => {
-        props.fetchStreams();
+        dispatch(fetchStreams());
     };
 
     useEffect(initialFetchStreams, []);
 
+    const streams = useSelector(state => Object.values(state.streams));
+    const currentUserId = useSelector(state => state.auth.userId);
+    const isSignedIn =  useSelector(state => state.auth.isSignedIn);
+
     const renderAdmin = (stream) => {
-        if (stream.userId === props.currentUserId) {
+        if (stream.userId === currentUserId) {
             return (
                 <div className="right floated content">
                     <Link to={`/streams/edit/${stream.id}`} className="ui button primary">
@@ -27,7 +32,7 @@ const StreamList = (props) => {
     };
 
     const renderList = () => {
-        return props.streams.map(stream => (
+        return streams.map(stream => (
             <div className="item" key={stream.id}>
                 {renderAdmin(stream)}
                 <i className="large middle aligned icon camera"></i>
@@ -44,7 +49,7 @@ const StreamList = (props) => {
     };
 
     const renderCreate = () => {
-        if (props.isSignedIn) {
+        if (isSignedIn) {
             return (
                 <div style={{ textAlign:'right'}}>
                     <Link to="streams/new" className="ui button primary">
@@ -66,12 +71,4 @@ const StreamList = (props) => {
     );
 };
 
-const mapStateToProps = (state) => {
-    return {
-         streams: Object.values(state.streams),
-         currentUserId: state.auth.userId,
-         isSignedIn: state.auth.isSignedIn
-         };
-};
-
-export default connect(mapStateToProps, { fetchStreams })(StreamList);
+export default StreamList;

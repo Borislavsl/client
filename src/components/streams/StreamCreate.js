@@ -1,12 +1,14 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { createStream } from '../../actions';
 import StreamForm from './StreamForm';
 
 const StreamCreate = (props) => {
 
+    const dispatch = useDispatch();
+
     const onSubmit = (formValues) => {
-        props.createStream(formValues);
+        dispatch(createStream(formValues));
     }
 
     return (
@@ -17,4 +19,4 @@ const StreamCreate = (props) => {
     );
 };
 
-export default connect(null, { createStream })(StreamCreate);
+export default StreamCreate;

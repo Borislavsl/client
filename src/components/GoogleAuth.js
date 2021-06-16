@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signIn, signOut } from '../actions';
 
 const GoogleAuth = (props) => {
+
+    const dispatch = useDispatch();
 
     useEffect(() => window.gapi.load(
         'client:auth2',
@@ -22,10 +24,10 @@ const GoogleAuth = (props) => {
     const onAuthChange = () => {
         const auth = authInstance();
         if (auth.isSignedIn.get()) {
-            props.signIn(auth.currentUser.get().getId());
+            dispatch(signIn(auth.currentUser.get().getId()));
         }
         else {
-            props.signOut();
+            dispatch(signOut());
         }
     }
 
@@ -37,10 +39,12 @@ const GoogleAuth = (props) => {
         authInstance().signOut();        
     }
 
+    const isSignedIn = useSelector(state => state.auth.isSignedIn);
+
     const renderAuthButton = () => {
-        if (props.isSignedIn === null) {
+        if (isSignedIn === null) {
             return null;
-        } else if (props.isSignedIn) {
+        } else if (isSignedIn) {
             return (
                 <button onClick={onSignOutClick} className="ui red google button">
                   <i className="google icon" />
@@ -64,8 +68,4 @@ const GoogleAuth = (props) => {
     );
 };
 
-const mapStateToProps = (state) => {
-    return { isSignedIn: state.auth.isSignedIn };
-}
-
-export default connect(mapStateToProps, { signIn, signOut})(GoogleAuth);
+export default GoogleAuth;
